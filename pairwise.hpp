@@ -169,7 +169,7 @@ void needleman_wunsch(std::string query, std::string subject){
         }
     }
 
-    dump_score_matrix(matrix, query, subject);
+    // dump_score_matrix(matrix, query, subject);
 
     std::string alignment;
 
@@ -184,7 +184,7 @@ void needleman_wunsch(std::string query, std::string subject){
              j--;
         }
         else if(j == 0){
-             // // add value to the insert vector
+             // add value to the insert vector
              inserted--;
              std::cout << "insert " << query[i-1] << " " << inserted << "residues from " << j << std::endl;
              // alignment.inserts.push_back(Inserted {query[i], j, inserted});
