@@ -4,6 +4,7 @@
 #include <iostream>
 #include <vector>
 #include <string>
+#include <algorithm>
 
 #define GAP_OPEN_PENALTY -12
 #define GAP_EXTEND_PENALTY -2
@@ -23,18 +24,18 @@ std::vector<int> BLOSUM90_10 {-1,  0,  -4,  -1,   0,  -4,  -2,  -1,  -4,  0,   6
 std::vector<int> BLOSUM90_11 {-2,  0,  -2,  -5,  -4,   0,  -5,  -4,   1,  0,  -3,   5,   2,  -4,  0,  -4,  -3,  -3,  -3,  -2,  0,   0,  -3,  -1,  -2,  -1};
 std::vector<int> BLOSUM90_12 {-2,  0,  -2,  -4,  -3,  -1,  -4,  -3,   1,  0,  -2,   2,   7,  -3,  0,  -3,   0,  -2,  -2,  -1,  0,   0,  -2,  -1,  -2,  -1};
 std::vector<int> BLOSUM90_13 {-2,  0,  -4,   1,  -1,  -4,  -1,   0,  -4,  0,   0,  -4,  -3,   7,  0,  -3,   0,  -1,   0,   0,  0,  -4,  -5,  -1,  -3,  -1};
-std::vector<int> BLOSUM90_14 { 0,  0  , 0,   0,   0,   0,   0,   0,   0,  0,   0,   0,   0,   0,  0,   0,   0,   0,   0,   0,  0,   0,   0,   0,   0,   0};
+std::vector<int> BLOSUM90_14 { 0,  0,   0,   0,   0,   0,   0,   0,   0,  0,   0,   0,   0,   0,  0,   0,   0,   0,   0,   0,  0,   0,   0,   0,   0,   0};
 std::vector<int> BLOSUM90_15 {-1,  0,  -4,  -3,  -2,  -4,  -3,  -3,  -4,  0,  -2,  -4,  -3,  -3,  0,   8,  -2,  -3,  -2,  -2,  0,  -3,  -5,  -1,  -4,  -1};
 std::vector<int> BLOSUM90_16 {-1,  0,  -4,  -1,   2,  -4,  -3,   1,  -4,  0,   1,  -3,  0,    0,  0,  -2,   7,   1,  -1,  -1,  0,  -3,  -3,  -1,  -3,  -1};
 std::vector<int> BLOSUM90_17 {-2,  0,  -5,  -3,  -1,  -4,  -3,   0,  -4,  0,   2,  -3,  -2,  -1,  0,  -3,   1,   6,  -1,  -2,  0,  -3,  -4,  -1,  -3,  -1};
 std::vector<int> BLOSUM90_18 { 1,  0,  -2,  -1,  -1,  -3,  -1,  -2,  -3,  0,  -1,  -3,  -2,   0,  0,  -2,  -1,  -1,   5,   1,  0,  -2,  -4,  -1,  -3,  -1};
 std::vector<int> BLOSUM90_19 { 0,  0,  -2,  -2,  -1,  -3,  -3,  -2,  -1,  0,  -1,  -2,  -1,   0,  0,  -2,  -1,  -2,   1,   6,  0,  -1,  -4,  -1,  -2,  -1};
-std::vector<int> BLOSUM90_20 { 0,  0  , 0,   0,   0,   0,   0,   0,   0,  0,   0,   0,   0,   0,  0,   0,   0,   0,   0,   0,  0,   0,   0,   0,   0,   0};
+std::vector<int> BLOSUM90_20 { 0,  0,   0,   0,   0,   0,   0,   0,   0,  0,   0,   0,   0,   0,  0,   0,   0,   0,   0,   0,  0,   0,   0,   0,   0,   0};
 std::vector<int> BLOSUM90_21 {-1,  0,  -2,  -5,  -3,  -2,  -5,  -4,   3,  0,  -3,   0,   0,  -4,  0,  -3,  -3,  -3,  -2,  -1,  0,   5,  -3,  -1,  -3,  -1};
 std::vector<int> BLOSUM90_22 {-4,  0,  -4,  -6,  -5,   0,  -4,  -3,  -4,  0,  -5,  -3,  -2,  -5,  0,  -5,  -3,  -4,  -4,  -4,  0,  -3,  11,  -1,   2,  -1};
 std::vector<int> BLOSUM90_23 {-1,  0,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  0,  -1,  -1,  -1,  -1,  0,  -1,  -1,  -1,  -1,  -1,  0,  -1,  -1,  -1,  -1,  -1};
 std::vector<int> BLOSUM90_24 {-3,  0,  -4,  -4,  -4,   3,  -5  , 1,  -2,  0,  -3,  -2,  -2,  -3,  0,  -4,  -3,  -3,  -3,  -2,  0,  -3,   2,  -1,   8,  -1};
-std::vector<int> BLOSUM90_25 { 0,  0  , 0,   0,   0,   0,   0,   0,   0,  0,   0,   0,   0,   0,  0,   0,   0,   0,   0,   0,  0,   0,   0,   0,   0,   0};
+std::vector<int> BLOSUM90_25 { 0,  0,   0,   0,   0,   0,   0,   0,   0,  0,   0,   0,   0,   0,  0,   0,   0,   0,   0,   0,  0,   0,   0,   0,   0,   0};
 
 std::vector<std::vector<int>> BLOSUM90 {
     BLOSUM90_0, BLOSUM90_1, BLOSUM90_2, BLOSUM90_3, BLOSUM90_4, BLOSUM90_5,
@@ -62,7 +63,7 @@ std::vector<std::vector<int>> BLOSUM90 {
 // } Insert;
 
 
-void cleanSeq(std::string x, bool is_query){
+void cleanSeq(std::string & x, bool is_query){
     for(size_t i = 0; i < x.size(); i++){
         char c = x[i];
         if (c == '-' || c == '_')
@@ -135,10 +136,10 @@ void needleman_wunsch(std::string query, std::string subject){
     matrix[0] = firstRowScores;
     for (size_t i = 1; i < query.size() + 1; i++){
         // initialize ith row of the score matrix
-        std::vector<int> row(subject.size() + 1);
+        std::vector<int> row(subject.size() + 1, 0);
         matrix[i] = row;
         // initialize ith row of the insertion state matrix
-        std::vector<char> delrow(subject.size() + 1);
+        std::vector<char> delrow(subject.size() + 1, '.');
         delmat[i] = delrow;
         // initialize the first value in the score matrix
         matrix[i][0] = 0;
@@ -179,7 +180,7 @@ void needleman_wunsch(std::string query, std::string subject){
     int inserted = 0;
     while (i > 0 || j > 0){
         if(i == 0){
-             std::cout << "initial gap: " << "(" << i << "," << j << ")" << std::endl;
+             // std::cout << "initial gap: " << "(" << i << "," << j << ")" << std::endl;
              alignment.push_back('-');
              j--;
         }
@@ -195,20 +196,18 @@ void needleman_wunsch(std::string query, std::string subject){
             int match_score = matrix[i-1][j-1];
             int insert_score = matrix[i][j-1];
             if (delete_score > match_score && delete_score > insert_score){
-                // // add value to the insert vector
+                // add value to the insert vector
                 inserted++;
                 std::cout << "insert " << query[i-1] << " " << inserted << "residues from " << j << std::endl;
                 // alignment.inserts.push_back(Inserted {query[i], j, inserted});
                 i--;
             } else {
                 if (match_score >= insert_score){
-                    std::cout << "match: " << match_score << "(" << i << "," << j << ")" << std::endl;
                     alignment.push_back(query[i-1]);
                     i--;
                     j--;
                     inserted = 0;
                 } else {
-                    std::cout << "gap: " << match_score << "(" << i << "," << j << ")" << std::endl;
                     alignment.push_back('-');
                     j--;
                     inserted = 0;
@@ -216,6 +215,8 @@ void needleman_wunsch(std::string query, std::string subject){
             }
         }
     }
+
+    std::reverse(alignment.begin(), alignment.end());
 
     std::cout << alignment << std::endl;
 }
