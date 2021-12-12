@@ -131,10 +131,7 @@ void needleman_wunsch(std::string query, std::string subject){
     std::vector<char> firstRowDelmat(subject.size()+1, '>');
     delmat[0] = firstRowDelmat;
     //  * initialize the first row to values [0,-1,-2,..]
-    std::vector<int> firstRowScores(subject.size() + 1);
-    for (size_t i = 0; i < subject.size()+1; i++){
-        firstRowScores[i] = -1 * i;
-    }
+    std::vector<int> firstRowScores(subject.size() + 1, 0);
     matrix[0] = firstRowScores;
     for (size_t i = 1; i < query.size() + 1; i++){
         // initialize ith row of the score matrix
@@ -144,24 +141,30 @@ void needleman_wunsch(std::string query, std::string subject){
         std::vector<char> delrow(subject.size() + 1);
         delmat[i] = delrow;
         // initialize the first value in the score matrix
-        matrix[i][0] = -1 * i;
+        matrix[i][0] = 0;
 
         for (size_t j = 1; j < subject.size() + 1; j++){
-            // adding a query gap is free if the subject is a gap, otherwise
-            // the cost depends on whether the gap is being opened or extended
-            int down = matrix[i-1][j] + gap_penalty[ delmat[i-1][j] == 'v' ] * (subject[j-1] != 'Z');
-            int over = matrix[i][j-1] + gap_penalty[ delmat[i][j-1] == '>' ];
-            int diag = matrix[i-1][j-1] + BLOSUM90[query[i-1] - 65][subject[j-1] - 65];
-
-            if (diag >= down && diag >= over){
-                delmat[i][j] = '.';
-                matrix[i][j] = diag;
-            } else if (down >= over){
-                delmat[i][j] = 'v';
-                matrix[i][j] = down;
+            if (i == query.size()){
+                matrix[i][j] = matrix[i][j-1]; // if we are at the bottom, just slide along with no additional penalties
+                                               // there is no penalty for being truncated
             } else {
-                delmat[i][j] = '>';
-                matrix[i][j] = over;
+
+                // adding a query gap is free if the subject is a gap, otherwise
+                // the cost depends on whether the gap is being opened or extended
+                int down = matrix[i-1][j] + gap_penalty[ delmat[i-1][j] != 'v' ] * (subject[j-1] != 'Z');
+                int over = matrix[i][j-1] + gap_penalty[ delmat[i][j-1] != '>' ];
+                int diag = matrix[i-1][j-1] + BLOSUM90[query[i-1] - 65][subject[j-1] - 65];
+
+                if (diag >= down && diag >= over){
+                    delmat[i][j] = '.';
+                    matrix[i][j] = diag;
+                } else if (down >= over){
+                    delmat[i][j] = 'v';
+                    matrix[i][j] = down;
+                } else {
+                    delmat[i][j] = '>';
+                    matrix[i][j] = over;
+                }
             }
         }
     }
@@ -173,29 +176,43 @@ void needleman_wunsch(std::string query, std::string subject){
     // trace back
     size_t i = query.size();
     size_t j = subject.size();
-    size_t inserted = 0;
-    while (i > 0 && j > 0){
-        int delete_score = matrix[i-1][j];
-        int match_score = matrix[i-1][j-1];
-        int insert_score = matrix[i][j-1];
-        if (delete_score > match_score && delete_score > insert_score){
-            // // add value to the insert vector
-            inserted++;
-            std::cout << "insert " << query[i-1] << " " << inserted << "residues from " << j << std::endl;
-            // alignment.inserts.push_back(Inserted {query[i], j, inserted});
-            i--;
+    int inserted = 0;
+    while (i > 0 || j > 0){
+        if(i == 0){
+             std::cout << "initial gap: " << "(" << i << "," << j << ")" << std::endl;
+             alignment.push_back('-');
+             j--;
+        }
+        else if(j == 0){
+             // // add value to the insert vector
+             inserted--;
+             std::cout << "insert " << query[i-1] << " " << inserted << "residues from " << j << std::endl;
+             // alignment.inserts.push_back(Inserted {query[i], j, inserted});
+             i--;
         } else {
-            if (match_score >= insert_score){
-                std::cout << "match: " << match_score << "(" << i << "," << j << ")" << std::endl;
-                alignment.push_back(query[i-1]);
+
+            int delete_score = matrix[i-1][j];
+            int match_score = matrix[i-1][j-1];
+            int insert_score = matrix[i][j-1];
+            if (delete_score > match_score && delete_score > insert_score){
+                // // add value to the insert vector
+                inserted++;
+                std::cout << "insert " << query[i-1] << " " << inserted << "residues from " << j << std::endl;
+                // alignment.inserts.push_back(Inserted {query[i], j, inserted});
                 i--;
-                j--;
-                inserted = 0;
             } else {
-                std::cout << "gap: " << match_score << "(" << i << "," << j << ")" << std::endl;
-                alignment.push_back('-');
-                j--;
-                inserted = 0;
+                if (match_score >= insert_score){
+                    std::cout << "match: " << match_score << "(" << i << "," << j << ")" << std::endl;
+                    alignment.push_back(query[i-1]);
+                    i--;
+                    j--;
+                    inserted = 0;
+                } else {
+                    std::cout << "gap: " << match_score << "(" << i << "," << j << ")" << std::endl;
+                    alignment.push_back('-');
+                    j--;
+                    inserted = 0;
+                }
             }
         }
     }
