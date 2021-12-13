@@ -3,6 +3,8 @@
 
 #include <vector>
 #include <iostream>
+#include <pybind11/pybind11.h>
+namespace py = pybind11;
 
 // This file defines
 //  - the BLOSUM90 substitution matrix
@@ -85,13 +87,11 @@ std::string cleanSeq(std::string x, bool is_query){
         // use is rair enough that I am happy to raise an error. Alternatively,
         // I could replace them with X's.
         if (c == 'B' || c == 'J' || c == 'O' || c == 'U' || ! (c >= 65 && c <= 90)){
-            std::cerr << "Bad input: " << c << std::endl;
-            std::exit(1);
+            throw pybind11::value_error("Illegal character");
         }
 
         if (is_query && c == 'Z') {
-            std::cerr << "The query sequence must not have gaps" << std::endl;
-            std::exit(1);
+            throw pybind11::value_error("Illegal character: the query sequence must not have gaps");
         }
 
         x[i] = c;
