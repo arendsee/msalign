@@ -1,27 +1,30 @@
 from setuptools import setup
+from pybind11 import get_cmake_dir
+# Available at setup time due to pyproject.toml
+from pybind11.setup_helpers import Pybind11Extension, build_ext
 
-from msalign.version import __version__
+ext_modules = [Pybind11Extension("msalign", ["src/main.cpp"])]
 
 with open("README.md", "r") as fh:
     long_description = fh.read()
 
 setup(
     name="msalign",
-    version=__version__,
+    version="0.1.0",
     description="Align novel sequences against a reference multiple sequence alignment",
     long_description=long_description,
     long_description_content_type="text/markdown",
     url="https://github.com/arendsee/msalign",
     author="Zebulun Arendsee",
     author_email="zebulun.arendsee@usda.gov",
-    packages=["msalign"],
     classifiers=[
         "Programming Language :: Python :: 3",
         "License :: OSI Approved :: MIT License",
         "Operating System :: OS Independent",
     ],
-    entry_points={"console_scripts": ["flutile=flutile.ui:main"]},
-    py_modules=["msalign"],
+    cmdclass={"build_ext": build_ext},
     zip_safe=False,
-    include_package_data=True,
+    ext_modules=ext_modules,
+    ext_require={"test": "pytest"},
+    python_requires=">=3.6",
 )
