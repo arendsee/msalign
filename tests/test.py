@@ -1,15 +1,18 @@
 import msalign as m
 
+def align(query, subject):
+    return m.NeedlemanWunsch(query, subject).get_alignment()
+
 # base cases
-assert m.align(query="", subject="") == ""
-assert m.align(query="MMM", subject="") == ""
-assert m.align(query="", subject="MMM") == "---"
+assert align(query="", subject="") == ""
+assert align(query="MMM", subject="") == ""
+assert align(query="", subject="MMM") == "---"
 
-assert m.align(query="M", subject="M") == "M"
-assert m.align(query="M", subject="MMM") == "--M"
-assert m.align(query="WM", subject="WMMM") == "WM--"
+assert align(query="M", subject="M") == "M"
+assert align(query="M", subject="MMM") == "--M"
+assert align(query="WM", subject="WMMM") == "WM--"
 
-assert m.align(query="WMAM", subject="WMMM") == "WMAM"
+assert align(query="WMAM", subject="WMMM") == "WMAM"
 
-assert m.align("ATTTTY", "ATTTT-IT") == "ATTTT--Y"
-assert m.align("ATTTTY", "ATTTT--IT") == "ATTTT---Y"
+assert align("ATTTTY", "ATTTT-IT") == "ATTTT--Y"
+assert align("ATTTTY", "ATTTT--IT") == "ATTTT---Y"
