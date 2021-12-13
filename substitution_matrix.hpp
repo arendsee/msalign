@@ -4,8 +4,11 @@
 #include <vector>
 #include <iostream>
 
-// The BLOSUM90 substitution matrix
-// 
+// This file defines
+//  - the BLOSUM90 substitution matrix
+//  - functions for transforming sequences so they are compatible with the matrix
+//  - functions for looking up character values in the matrix (substitution_score and isGap)
+//
 // The matrix contains 26 columns and 26 rows. These correspond to the letters
 // of the alphabet. 'Z' stores gaps. The letters that are not used are for
 // amino acids, unknowns ('X') or gaps are filled with 0's.
@@ -47,22 +50,28 @@ std::vector<std::vector<int>> BLOSUM90 {
 
 
 
+// Characters in the sequences are upper case letters from A-Z. The ASCII value
+// for A is 65, so we can get indices into the substitution matrix by
+// subtracting 65.
 int substitution_score(char a, char b){
     return BLOSUM90[a - 65][b - 65];
 }
 
 
 
+// Determine if the a character is a gap. Conventionally, a gap is represented
+// by '-', but to indexed lookup, cleanSeq replaces it with the character 'Z'.
+// This is an implementation detail that algorithms above should not be exposed
+// to, so they should instead use this function.
 bool isGap(char a){
     return (a == 'Z');
 }
 
 
 
-// This is pass-by-copy. The string is changed and a new string is returned. I
-// do not change in place. That gives the alignment algorithm and this cleaning
-// function the freedom to specialize the string format (such as turning '-' to
-// 'Z') without side effects.
+// This is pass-by-value and it returns a new string. I do not change in place
+// because the "cleaning" done here (such as replacing '-' with 'Z') should not
+// be propagated to downstream printing functions.
 std::string cleanSeq(std::string x, bool is_query){
     for(size_t i = 0; i < x.size(); i++){
         char c = x[i];
@@ -72,7 +81,10 @@ std::string cleanSeq(std::string x, bool is_query){
             c -= 32;
         }
 
-        if (c == 'B' || c == 'J' || c == 'O' || ! (c >= 65 && c <= 90)){
+        // Some of these characters represent ambiguous amino acids, but such
+        // use is rair enough that I am happy to raise an error. Alternatively,
+        // I could replace them with X's.
+        if (c == 'B' || c == 'J' || c == 'O' || c == 'U' || ! (c >= 65 && c <= 90)){
             std::cerr << "Bad input: " << c << std::endl;
             std::exit(1);
         }
