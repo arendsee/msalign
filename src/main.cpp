@@ -10,5 +10,9 @@ namespace py = pybind11;
 
 PYBIND11_MODULE(msalign, m){
     m.doc() = "msalign description"; // module documentation
-    m.def("align", &align, "The alignment of a query to a subject");
+    m.def( "align"
+         , &align
+         , "The alignment of a query to a subject"
+         , py::arg("query")
+         , py::arg("subject"));
 }
