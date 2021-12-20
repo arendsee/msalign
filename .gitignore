@@ -4,3 +4,4 @@ z*
 venv/
 build/
 *.egg-info/
+dist/
