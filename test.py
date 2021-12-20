@@ -23,6 +23,13 @@ class TestAlignments(unittest.TestCase):
         self.assertEqual(align(query="ATTTTY", subject="ATTTT-IT"), "ATTTTY--")
         self.assertEqual(align(query="ATTTTY", subject="ATTTT--IT"), "ATTTTY---")
 
+    def test_gaps(self):
+        self.assertEqual(align(query="TTTW", subject="T--TTW"), "T-TTTW")
+        self.assertEqual(align(query="GANDALF", subject="GANDALFFANEALF"), "GANDALF-------")
+        self.assertEqual(align(query="GANDALF", subject="FANEALFGANDALF"), "-------GANDALF")
+        self.assertEqual(align(query="GANDALF", subject="GGANDALFF"), "-GANDALF-")
+        self.assertEqual(align(query="GANDALF", subject="GAGANDALFLF"), "--GANDALF--")
+
     def test_errors(self):
         with self.assertRaises(ValueError):
             align(query="CAT-IN-HAT", subject="CAT")

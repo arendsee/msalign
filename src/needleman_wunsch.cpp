@@ -72,7 +72,10 @@ std::vector<std::vector<int>> needleman_wunsch_matrix(std::string query, std::st
         for (size_t j = 1; j < subjectClean.size() + 1; j++){
             // adding a query gap is free if the subject is a gap, otherwise
             // the cost depends on whether the gap is being opened or extended
-            int down = matrix[i-1][j] + gap_penalty[ delmat[i-1][j] != 'v' ] * !isGap(subjectClean[j-1]);
+            int down = matrix[i-1][j] + gap_penalty[ delmat[i-1][j] != 'v' ]
+                                      * !isGap(subjectClean[j-1])
+                                      * !(i == queryClean.size())
+                                      ;
             int over = matrix[i][j-1] + gap_penalty[ delmat[i][j-1] != '>' ];
             int diag = matrix[i-1][j-1] + substitution_score(queryClean[i-1], subjectClean[j-1]);
 
