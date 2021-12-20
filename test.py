@@ -15,13 +15,13 @@ class TestAlignments(unittest.TestCase):
 
     def test_simple(self):
         self.assertEqual(align(query="M", subject="M"), "M")
-        self.assertEqual(align(query="M", subject="MMM"), "--M")
+        self.assertEqual(align(query="M", subject="MMM"), "M--")
         self.assertEqual(align(query="WM", subject="WMMM"), "WM--")
         self.assertEqual(align(query="WMAM", subject="WMMM"), "WMAM")
 
     def test_problematic(self):
-        self.assertEqual(align(query="ATTTTY", subject="ATTTT-IT"), "ATTTT--Y")
-        self.assertEqual(align(query="ATTTTY", subject="ATTTT--IT"), "ATTTT---Y")
+        self.assertEqual(align(query="ATTTTY", subject="ATTTT-IT"), "ATTTTY--")
+        self.assertEqual(align(query="ATTTTY", subject="ATTTT--IT"), "ATTTTY---")
 
     def test_errors(self):
         with self.assertRaises(ValueError):

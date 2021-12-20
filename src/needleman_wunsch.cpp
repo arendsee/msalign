@@ -56,6 +56,8 @@ std::vector<std::vector<int>> needleman_wunsch_matrix(std::string query, std::st
     //  * initialize the first row to values [0,-1,-2,..]
     std::vector<int> firstRowScores(subjectClean.size() + 1, 0);
     matrix[0] = firstRowScores;
+
+    // for each row
     for (size_t i = 1; i < queryClean.size() + 1; i++){
         // initialize ith row of the score matrix
         std::vector<int> row(subjectClean.size() + 1, 0);
@@ -66,28 +68,23 @@ std::vector<std::vector<int>> needleman_wunsch_matrix(std::string query, std::st
         // initialize the first value in the score matrix
         matrix[i][0] = 0;
 
+        // for each column
         for (size_t j = 1; j < subjectClean.size() + 1; j++){
-            if (i == queryClean.size()){
-                matrix[i][j] = matrix[i][j-1]; // if we are at the bottom, just slide along with no additional penalties
-                                               // there is no penalty for being truncated
+            // adding a query gap is free if the subject is a gap, otherwise
+            // the cost depends on whether the gap is being opened or extended
+            int down = matrix[i-1][j] + gap_penalty[ delmat[i-1][j] != 'v' ] * !isGap(subjectClean[j-1]);
+            int over = matrix[i][j-1] + gap_penalty[ delmat[i][j-1] != '>' ];
+            int diag = matrix[i-1][j-1] + substitution_score(queryClean[i-1], subjectClean[j-1]);
+
+            if (diag >= down && diag >= over){
+                delmat[i][j] = '.';
+                matrix[i][j] = diag;
+            } else if (down >= over){
+                delmat[i][j] = 'v';
+                matrix[i][j] = down;
             } else {
-
-                // adding a query gap is free if the subject is a gap, otherwise
-                // the cost depends on whether the gap is being opened or extended
-                int down = matrix[i-1][j] + gap_penalty[ delmat[i-1][j] != 'v' ] * !isGap(subjectClean[j-1]);
-                int over = matrix[i][j-1] + gap_penalty[ delmat[i][j-1] != '>' ];
-                int diag = matrix[i-1][j-1] + substitution_score(queryClean[i-1], subjectClean[j-1]);
-
-                if (diag >= down && diag >= over){
-                    delmat[i][j] = '.';
-                    matrix[i][j] = diag;
-                } else if (down >= over){
-                    delmat[i][j] = 'v';
-                    matrix[i][j] = down;
-                } else {
-                    delmat[i][j] = '>';
-                    matrix[i][j] = over;
-                }
+                delmat[i][j] = '>';
+                matrix[i][j] = over;
             }
         }
     }
