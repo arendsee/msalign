@@ -25,6 +25,5 @@ setup(
     cmdclass={"build_ext": build_ext},
     zip_safe=False,
     ext_modules=ext_modules,
-    ext_require={"test": "pytest"},
     python_requires=">=3.6",
 )
