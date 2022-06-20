@@ -4,8 +4,8 @@
 
 namespace py = pybind11;
 
-PYBIND11_MODULE(msalign, m){
-    m.doc() = "msalign description"; // module documentation
+PYBIND11_MODULE(rpalign, m){
+    m.doc() = "rpalign description"; // module documentation
 
     py::class_<NeedlemanWunsch>(m, "NeedlemanWunsch")
         .def(py::init<std::string, std::string>())
